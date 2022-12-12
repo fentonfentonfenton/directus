@@ -42,11 +42,18 @@ export class AmazonWebServicesS3Storage extends Storage {
 		super();
 		const S3 = require('aws-sdk/clients/s3');
 
-		this.$driver = new S3({
-			accessKeyId: config.key,
-			secretAccessKey: config.secret,
-			...config,
-		});
+		if (process.env.AWS_SESSION_TOKEN) {
+			this.$driver = new S3({
+				...config,
+			})
+		}
+		else {
+			this.$driver = new S3({
+				accessKeyId: config.key,
+				secretAccessKey: config.secret,
+				...config,
+			});
+		}
 
 		this.$bucket = config.bucket;
 		this.$root = config.root ? normalize(config.root).replace(/^\//, '') : '';
