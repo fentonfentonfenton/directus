@@ -19,9 +19,15 @@ export default function getMailer(): Transporter {
 	} else if (transportName === 'ses') {
 		const aws = require('@aws-sdk/client-ses');
 
-		const sesOptions: Record<string, unknown> = getConfigFromEnv('EMAIL_SES_');
+		if (process.env.AWS_SESSION_TOKEN) {
+			const ses = new aws.SES()
+		}
+		else {
+			const sesOptions: Record<string, unknown> = getConfigFromEnv('EMAIL_SES_');
+			const ses = new aws.SES(sesOptions);
+		}
 
-		const ses = new aws.SES(sesOptions);
+
 
 		transporter = nodemailer.createTransport({
 			SES: { ses, aws },
